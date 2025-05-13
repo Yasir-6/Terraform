@@ -3,11 +3,11 @@ name: Terraform VPC Deployment
 on:
   push:
     paths:
-      - 'infra/**/*.tf'
+      - 'environments/**/*.tf'
       - '.github/workflows/terraform.yml'
   pull_request:
     paths:
-      - 'infra/**/*.tf'
+      - 'environments/**/*.tf'
 
 jobs:
   terraform:
@@ -30,28 +30,27 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # List contents of the directory to debug any path issues
-      - name: List directory contents of dev
-        run: ls -R infra/environments/dev
-        working-directory: .
+      # Debugging step to confirm correct path
+      - name: List directory contents of environments/dev
+        run: ls -R environments/dev
 
       - name: Terraform Init
         run: terraform init
-        working-directory: infra/environments/dev
+        working-directory: environments/dev
 
       - name: Terraform Format Check
         run: terraform fmt -check
-        working-directory: infra/environments/dev
+        working-directory: environments/dev
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: infra/environments/dev
+        working-directory: environments/dev
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-        working-directory: infra/environments/dev
+        working-directory: environments/dev
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
-        working-directory: infra/environments/dev
+        working-directory: environments/dev
